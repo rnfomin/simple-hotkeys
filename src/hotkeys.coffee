@@ -1,6 +1,6 @@
 
 class Hotkeys extends SimpleModule
-
+  @count: 0
   @keyNameMap:
     # Keys with words or arrows on them
     8:"Backspace", 9:"Tab", 13:"Enter", 16:"Shift", 17:"Control", 18:"Alt",
@@ -52,62 +52,42 @@ class Hotkeys extends SimpleModule
     keys.join "_"
 
   opts:
-    el: null # required
+    el: document
 
   _init: ->
-    @el = $ @opts.el
+    @id = ++ @constructor.count
     @_map = {}
-    @_keystack = []
-    throw Error('simple hotkeys: el option is required') if @el.length < 1
-    @el.on "keydown.simple-hotkeys", (e) =>
-      unless keyname = @constructor.keyNameMap[e.which]
-        @_keystack = []
-        return
-      keyname = keyname.toLowerCase()
-      if @_keystack.length == 0
-        shortcut = ""
-        shortcut += "alt_" if e.altKey
-        shortcut += "control_" if e.ctrlKey
-        shortcut += "meta_" if e.metaKey
-        shortcut += "shift_" if e.shiftKey
-        shortcut += keyname
-        @_keystack.push shortcut if handler = @_map[shortcut]
-      else
-        @_keystack.push keyname
-        handler = @_map[@_keystack[0]][@_keystack.slice(1).join "_"]
-      if $.isFunction handler
-        result = handler.call this, e 
-        @_keystack = []
-        return result
-    .on "keyup.simple-hotkeys", (e) =>
-      return unless keyname = @constructor.keyNameMap[e.which]
-      if ["control", "alt", "meta", "shift"].indexOf(keyname.toLowerCase()) > -1
-        @_keystack = []
-    .data "simpleHotkeys", @
+    @_delegate = if typeof @opts.el is "string" then document else @opts.el
+    $(@_delegate).on "keydown.simple-hotkeys-#{@id}", @opts.el, (e) =>
+      @_getHander(e)?.call this, e
 
-  _normalize: (shortcut) -> @constructor.normalize shortcut
+  _getHander: (e) ->
+    return unless keyname = @constructor.keyNameMap[e.which]
+    shortcut = ""
+    shortcut += "alt_" if e.altKey
+    shortcut += "control_" if e.ctrlKey
+    shortcut += "meta_" if e.metaKey
+    shortcut += "shift_" if e.shiftKey
+    shortcut += keyname.toLowerCase()
+    @_map[shortcut]
+
+  respondTo: (subject) ->
+    if typeof subject is 'string'
+      @_map[@constructor.normalize subject]?
+    else
+      @_getHander(subject)?
 
   add: (shortcut, handler) ->
-    if $.isArray shortcut
-      @_map[mainKey = @_normalize shortcut[0]] ||= {}
-      @_map[mainKey][@_normalize shortcut[1]] = handler
-    else
-      @_map[@_normalize shortcut] = handler
+    @_map[@constructor.normalize shortcut] = handler
     @
 
   remove: (shortcut) ->
-    if $.isArray(shortcut) and @_map[mainKey = @_normalize shortcut[0]]
-      delete @_map[mainKey][@_normalize shortcut[1]]
-      delete @_map[mainKey] if $.isEmptyObject @_map[mainKey]
-    else
-      delete @_map[@_normalize shortcut]
+    delete @_map[@constructor.normalize shortcut]
     @
 
   destroy: ->
-    @el.off '.simple-hotkeys'
-      .removeData 'simpleHotkeys'
+    $(@_delegate).off ".simple-hotkeys-#{@id}"
     @_map = {}
-    @_keystack = []
     @
 
 hotkeys = (opts) ->

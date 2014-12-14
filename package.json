@@ -1,7 +1,7 @@
 {
   "name": "simple-hotkeys",
   "description": "Simple hotkeys for tower.im",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "https://github.com/ichord/simple-hotkeys",
   "author": {
     "name": "ichord",
@@ -24,5 +24,5 @@
     "grunt-contrib-jasmine": "0.x",
     "grunt-umd": "2.x"
   },
-  "keywords": []
+  "keywords": ["hotkeys"]
 }

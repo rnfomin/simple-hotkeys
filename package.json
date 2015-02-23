@@ -17,6 +17,11 @@
   "scripts": {
     "test": "grunt test --verbose"
   },
+  "main": "lib/hotkeys.js",
+  "dependencies": {
+    "jquery": "2.x",
+    "simplemodule": "2.x"
+  },
   "devDependencies": {
     "grunt": "0.x",
     "grunt-contrib-watch": "0.x",

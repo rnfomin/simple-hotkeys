@@ -25,7 +25,7 @@ module.exports = (grunt) ->
         deps:
           'default': ['$', 'SimpleModule']
           amd: ['jquery', 'simple-module']
-          cjs: ['jquery', 'simple-module']
+          cjs: ['jquery', 'simplemodule']
           global:
             items: ['jQuery', 'SimpleModule']
             prefix: ''

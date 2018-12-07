@@ -19,8 +19,8 @@
   },
   "main": "lib/hotkeys.js",
   "dependencies": {
-    "jquery": "2.x",
-    "simple-module": "~2.0.5"
+    "jquery": "3.x",
+    "simple-module": "git+https://github.com/rnfse/simple-module.git"
   },
   "devDependencies": {
     "grunt": "0.x",
